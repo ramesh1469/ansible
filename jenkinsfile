@@ -1,16 +1,16 @@
 pipeline {
-    agent {label "Node-1" }
+    agent {label: "Node-1" }
+     triggers { pollSCM('* * * * *') }
       stages {
-        stage {
-            steps (vcs) {
-                git branch: "master",url: "https://github.com/ramesh1469/ansible.git"       
-            } 
+        stage(vcs) {
+            steps {
+                git branch:"master",url: "https://github.com/ramesh1469/ansibletask.git"       
+             } 
         }
-       stage {
-          steps ( ansible ) {
+       stage(ansible) {
+          steps {
             sh "cd 31-01-23 ",
             sh "ansible-playbook -i hosts openjdk.yaml"  
-
           }
        } 
    }
