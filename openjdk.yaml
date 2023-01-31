@@ -13,11 +13,11 @@
        update_cache: yes
        state: "{{ state }}"
      when:
-       - ansible-facts["distribution"] == "ubuntu" 
+       - ansible-facts["distribution"] == "Ubuntu" 
    - name: 
      ansible.builtin.yum: 
        name: "{{ centos_java_name }}"
        update_cache: yes 
        state: "{{ state }}"
      when: 
-       - ansible-facts["distribution"] == "centos"   
+       - ansible-facts["distribution"] == "Centos"   
