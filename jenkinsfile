@@ -1,0 +1,17 @@
+pipeline {
+    agent {label "Node-1" }
+      stages {
+        stage {
+            steps {
+                git         
+            } 
+        }
+       stage {
+          steps {
+            sh "cd 31-01-23 ",
+            sh "ansible-playbook -i hosts openjdk.yaml"  
+
+          }
+       } 
+   }
+}
