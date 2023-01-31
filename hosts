@@ -1,6 +1,6 @@
-Local host
+[ubuntu]
 172.31.6.149
-[ ubuntu ]
+localhost
 
 172.31.4.138
-[ centos ]
+[centos]
