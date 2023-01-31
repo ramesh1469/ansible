@@ -2,12 +2,12 @@ pipeline {
     agent {label "Node-1" }
       stages {
         stage {
-            steps {
-                git         
+            steps (vcs) {
+                git branch: "master",url: "https://github.com/ramesh1469/ansible.git"       
             } 
         }
        stage {
-          steps {
+          steps ( ansible ) {
             sh "cd 31-01-23 ",
             sh "ansible-playbook -i hosts openjdk.yaml"  
 
