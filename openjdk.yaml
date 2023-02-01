@@ -4,20 +4,25 @@
   hosts: all
   vars:
     ubunt_java_name: openjdk-8-jdk
-    centos_java_name: openjdk-11-jdk 
-    state: present 
+    centos_java_name: java-11-openjdk-devel
+  
   tasks: 
-   - name: installing openjdk in ubuntu
-     ansible.builtin.apt:
-       name: "{{ ubunt_java_name }}" 
-       update_cache: yes
-       state: "{{ state }}"
-     when:
-       - ansible-facts["distribution"] == "Ubuntu" 
-   - name: 
-     ansible.builtin.yum: 
-       name: "{{ centos_java_name }}"
-       update_cache: yes 
-       state: "{{ state }}"
-     when: 
-       - ansible-facts["distribution"] == "Centos"   
+    - name: java installing 
+      ansible.builtin.debug:
+        msg: java 8 installing 
+    - name: installing openjdk in ubuntu
+      ansible.builtin.apt:
+        name: "{{ ubunt_java_name }}" 
+        update_cache: yes
+        state: present 
+      when: 
+      - ansible_facts["distribution"] == "Ubuntu"
+    - name: java installing 
+      ansible.builtin.debug:
+        msg: java 11 installing on centos      
+    - name: java install on Centos 
+      ansible.builtin.yum:
+        name: "{{ centos_java_name }}"
+        state: present 
+      when: 
+        - ansible_facts["nodename"] == "ip-172-31-15-8.us-east-2.compute.internal"
