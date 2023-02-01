@@ -15,14 +15,4 @@
         name: "{{ ubunt_java_name }}" 
         update_cache: yes
         state: present 
-      when: 
-      - ansible_facts["distribution"] == "Ubuntu"
-    - name: java installing 
-      ansible.builtin.debug:
-        msg: java 11 installing on centos      
-    - name: java install on Centos 
-      ansible.builtin.yum:
-        name: "{{ centos_java_name }}"
-        state: present 
-      when: 
-        - ansible_facts["nodename"] == "ip-172-31-15-8.us-east-2.compute.internal"
+    
