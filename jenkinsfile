@@ -1,0 +1,24 @@
+pipeline{
+    agent { label "Docker"}
+    stages{
+        stage{
+            steps{
+                git clone: "https://github.com/ramesh1469/Nopcommerce.git",
+                git branch: "main"
+"
+            }
+        }
+        stage ("build & SonarQube analysis"){
+            agent { label "Docker"}
+            steps{
+                withSonarQubeEnv('sonar') {
+                sh 'dotnet build. sonar:sonar' 
+            }
+        }
+        stage{
+            steps{
+
+            }
+        }
+    }
+}

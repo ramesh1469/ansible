@@ -1,0 +1,75 @@
+--- 
+- name: tomcat
+  become: yes
+  hosts: all
+  vars:
+    tomcat_user: tomcat 
+    tomcat_user_home: /opt/tomcat
+    tomcat_shell: bin/false 
+    tomcat_url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
+    tomcat_download_dest: /home/devops
+    tomcat_directory: /opt/tomcat/latest
+    tomcat_package_src: /home/devops/apache-tomcat-10.0.27.tar.gz
+    tomcat_package_dest: /opt/tomcat/
+    tomcat_package_unarchive_src: /opt/tomcat/apache-tomcat-10.0.27/
+    tomcat_package_unarchive_dest: /opt/tomcat/latest/ 
+    tomcat_permission: "777"
+    tomcat_service_file_src: tomcat.service
+    tomcat_service_file_dest: /etc/systemd/system/tomcat.service
+  tasks:
+   - name: openjdk-11-jdk 
+     ansible.builtin.apt:
+       name: openjdk-11-jdk 
+       state: present 
+   - name: create a user 
+     ansible.builtin.user:
+       name: "{{ tomcat_user }}"
+       home: "{{ tomcat_user_home }}"
+       shell: "{{ tomcat_shell }}" 
+   - name: download the tomcat 
+     ansible.builtin.get_url:
+       url: "{{ tomcat_url }}"
+       dest: "{{ tomcat_download_dest  }}"
+       mode: "{{ tomcat_permission }}"
+   - name: create the directory
+     ansible.builtin.file:
+       path: "{{ tomcat_directory }}"  
+       state: directory
+       mode: "{{ tomcat_permission }}"
+   - name: unarchive 
+     ansible.builtin.unarchive:
+       src: "{{ tomcat_package_src }}"
+       dest: "{{ tomcat_user_home }}"
+       remote_src: yes    
+   - name: copy the unarchive file into latest 
+     ansible.builtin.copy:
+       src: "{{ tomcat_package_unarchive_src }}"
+       dest: "{{ tomcat_package_unarchive_dest }}" 
+       remote_src: yes
+       owner: "{{ tomcat_user }}"
+       group: "{{ tomcat_user }}"  
+       mode: "{{ tomcat_permission }}"
+   - name: give the permission 
+     ansible.builtin.file:
+       path: /opt/tomcat/latest/bin/
+       owner: "{{ tomcat_user }}" 
+       group: "{{ tomcat_user }}" 
+       mode: "{{ tomcat_permission }}"        
+   - name: copy the tomcat.service file
+     ansible.builtin.copy: 
+       src: "{{ tomcat_service_file_src }}"
+       dest: "{{ tomcat_service_file_dest }}"
+       owner: "{{ tomcat_user }}"  
+       group: "{{ tomcat_user }}" 
+       mode: "{{ tomcat_permission }}"
+   - name: demon-reload
+     ansible.builtin.systemd:
+       state: started
+       daemon_reload: yes
+       name: tomcat.service 
+   - name: enable the tomcat.service 
+     ansible.builtin.systemd:
+       name: tomcat.service 
+       enabled: yes     
+
+               

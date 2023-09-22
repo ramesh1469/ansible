@@ -1,0 +1,90 @@
+--- 
+- name: install the wildfly
+  become: yes
+  hosts: all 
+  vars:
+    home_directory: /opt/wildfly
+    group_name: wildfly
+    user_name: wildfly
+    user_shell: /opt/wildfy
+    url_dest: /tmp/
+    wildfly_url: https://github.com/wildfly/wildfly/releases/download/25.0.1.Final/wildfly-25.0.1.Final.tar.gz
+    unarchive_src: /tmp/wildfly-25.0.1.Final.tar.gz
+    unarchive_dest: /opt/wildfly/
+    create_directory: /etc/wildfly
+    copy_untarfile: /opt/wildfly/wildfly-25.0.1.Final/
+  tasks:
+    - name: creat the director
+      ansible.builtin.file:
+        path: {{ "user_shell" }}
+        state: directory
+        mode: "777"  
+    - name: creat the group and add the user 
+      ansible.builtin.group:
+        name: {{ "group_name" }}
+        state: present    
+    - name: creat the user and add into group 
+      ansible.builtin.user:
+        name: {{ "user_name" }}
+        shell: {{ "user_shell" }}
+        append: yes
+    - name: download the wildfly
+      ansible.builtin.get_url:
+        dest: {{ "url_dest" }}
+        url: {{ "wildfly_url" }}
+    - name: unarchive the file 
+      ansible.builtin.unarchive:
+        src: {{ "unarchive_src" }}
+        dest: {{ "unarchive_dest" }}
+        remote_src: yes
+    - name: directory permissions
+      ansible.builtin.file:
+        path: {{ "user_shell" }}
+        owner: {{ "user_name" }}
+        group: {{ "group_name" }}
+        mode: "0777"
+    - name: creat the directory
+      ansible.builtin.file:
+        path: {{ "create_directory" }}
+        state: directory
+        mode: "0777"
+    - name: copy folder path 
+      ansible.builtin.copy: 
+        src: {{ "create_directory" }}
+        dest: {{ "copy_untarfile" }}
+        remote_src: yes     
+    - name: copy the wildfly.conf 
+      ansible.builtin.copy:
+        src: /opt/wildfly/wildfly-25.0.1.Final/docs/contrib/scripts/systemd/wildfly.conf
+        dest: /etc/wildfly
+        remote_src: yes
+    - name: copy the launch.sh
+      ansible.builtin.copy:
+        src: /opt/wildfly/wildfly-25.0.1.Final/docs/contrib/scripts/systemd/launch.sh
+        dest: /opt/wildfly/bin/
+        remote_src: yes
+    - name: permission for shown 
+      ansible.builtin.file:
+        path: /opt/wildfly/bin/
+        owner: wildfly
+        group: wildfly
+        mode: "777"
+    - name:  copy the wildfly.service 
+      ansible.builtin.copy:
+        src: /opt/wildfly/wildfly-25.0.1.Final/docs/contrib/scripts/systemd/wildfly.service
+        dest: /etc/systemd/system
+        remote_src: yes
+    - name: permission for shown 
+      ansible.builtin.file:
+        path: /opt/wildfly/wildfly-25.0.1.Final/docs/contrib/scripts/systemd/wildfly.service
+        owner: wildfly
+        group: wildfly
+        mode: "777"   
+    - name: start wildfly.service
+      ansible.builtin.systemd:
+        name: wildfly.service
+        state: started
+    - name: enabled wildfly.service
+      ansible.builtin.systemd:
+        name: wildfly.service
+        enabled: true    
